@@ -64,6 +64,10 @@
       margin-top: 10px;
     }
 
+    button.secondary {
+      background-color: #6c757d;
+    }
+
     button:hover {
       opacity: 0.9;
     }
@@ -126,7 +130,7 @@
       display: block;
     }
 
-    /* Tabelle */
+    /* Tabellen */
     table {
       width: 100%;
       border-collapse: collapse;
@@ -144,7 +148,6 @@
       background-color: #f1f1f1;
     }
 
-    /* Status Badges */
     .badge {
       padding: 4px 8px;
       border-radius: 4px;
@@ -155,9 +158,8 @@
     }
     .badge-offen { background-color: var(--warning); color: #000; }
     .badge-gueltig { background-color: var(--success); }
-    .badge-erledigt { background-color: #6c757d; }
 
-    /* Zugriffscode Banner für Fdl */
+    /* Code Banner */
     .code-banner {
       background-color: #e3f2fd;
       border: 2px dashed var(--primary);
@@ -176,7 +178,28 @@
       margin: 10px 0;
     }
 
-    /* Formulare */
+    /* Formular & Schritt-System */
+    .step-indicator {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .step {
+      flex: 1;
+      padding: 10px;
+      background: #e9ecef;
+      text-align: center;
+      border-radius: 4px;
+      font-weight: bold;
+      color: #666;
+    }
+
+    .step.active {
+      background: var(--primary);
+      color: white;
+    }
+
     .form-group {
       margin-bottom: 15px;
     }
@@ -189,13 +212,32 @@
 
     .form-group input, .form-group textarea, .form-group select {
       width: 100%;
-      padding: 8px;
+      padding: 10px;
       box-sizing: border-box;
       border: 1px solid var(--border);
       border-radius: 4px;
+      font-size: 14px;
     }
 
-    /* Digitaler Befehl Dokumentansicht */
+    .radio-group {
+      display: flex;
+      gap: 20px;
+      margin-top: 5px;
+    }
+
+    .radio-group label {
+      font-weight: normal;
+      cursor: pointer;
+    }
+
+    .error-msg {
+      color: var(--danger);
+      font-weight: bold;
+      margin-top: 10px;
+      display: none;
+    }
+
+    /* Papier-Vorschau */
     .befehl-paper {
       background: #fffbe6;
       border: 2px solid #333;
@@ -319,24 +361,81 @@
         <div id="code-banner" class="code-banner">
           <p style="margin: 0; font-weight: bold; color: #555;">📢 Zugriffscode für den Triebfahrzeugführer:</p>
           <div id="generated-code-display" class="code-display">------</div>
-          <p style="margin: 0; font-size: 13px; color: #666;">Teile diesen Code dem Lokführer über den Zugfunk / Sprache mit!</p>
+          <p style="margin: 0; font-size: 13px; color: #666;">Teile diesen Code dem Lokführer über den Zugfunk / Voice-Chat mit!</p>
         </div>
 
-        <form id="create-befehl-form">
+        <div class="step-indicator">
+          <div id="step-1-badge" class="step active">Schritt 1: Kopfdaten & Befehlstyp</div>
+          <div id="step-2-badge" class="step">Schritt 2: Befehlsinhalt & Ausfertigung</div>
+        </div>
+
+        <div id="form-step-1">
           <div class="form-group">
-            <label for="zugnummer">Zugnummer:</label>
-            <input type="text" id="zugnummer" required placeholder="z. B. 4021">
+            <label for="zugnummer">Triebfahrzeugnummer / Zugnummer *</label>
+            <input type="text" id="zugnummer" placeholder="z. B. 4021" required>
           </div>
+
           <div class="form-group">
-            <label for="standort">Betriebsstelle / Standort:</label>
-            <input type="text" id="standort" required placeholder="z. B. Hauptbahnhof Signal A">
+            <label for="standort">Betriebsstelle / Ort *</label>
+            <input type="text" id="standort" placeholder="z. B. Hbf Signal A" required>
           </div>
+
           <div class="form-group">
-            <label for="befehl-text">Befehlsinhalt / Anweisung:</label>
-            <textarea id="befehl-text" rows="5" required placeholder="z. B. Befehl 1: Vorbeifahrt an Signal Halt zeigen erlaubt."></textarea>
+            <label>Fahrtart *</label>
+            <div class="radio-group">
+              <label><input type="radio" name="fahrtart" value="Zugfahrt" checked> Zugfahrt</label>
+              <label><input type="radio" name="fahrtart" value="Rangierfahrt"> Rangierfahrt</label>
+            </div>
           </div>
-          <button type="submit" style="background: var(--success);">Befehl ausfertigen & Zugriffscode erzeugen</button>
-        </form>
+
+          <div class="form-group">
+            <label for="arbeitsplatz">Arbeitsplatz / Fdl-Bezeichnung *</label>
+            <input type="text" id="arbeitsplatz" placeholder="z. B. Fdl Stellwerk Nord" required>
+          </div>
+
+          <div class="form-group">
+            <label for="befehlstyp">Befehlstyp *</label>
+            <select id="befehlstyp" required>
+              <option value="BITTE_AUSWAEHLEN" selected>Bitte auswählen</option>
+              <option value="befehl_1">Befehl 1: Vorbeifahrt an einem Hauptsignal / Sperrsignal</option>
+              <option value="befehl_2">Befehl 2: Fahren auf Sicht</option>
+              <option value="befehl_3">Befehl 3: Besetztes Gleis / Einfahrt</option>
+              <option value="befehl_4">Befehl 4: Widerruf einer Befehlsnachricht</option>
+              <option value="befehl_5">Befehl 5: Sperrung / Gleisbenutzung / Rangieren</option>
+              <option value="befehl_6">Befehl 6: Vorbeifahrt an Kennlicht / Gestörtes Signal</option>
+              <option value="befehl_7">Befehl 7: Störung an Bahnübergang (Bü)</option>
+              <option value="befehl_8">Befehl 8: Absenkung Stromabnehmer / Oberleitung</option>
+              <option value="befehl_9">Befehl 9: Langsamfahrstelle / Geschwindigkeit verringern</option>
+              <option value="befehl_14">Befehl 14: Freitext / Sonstige Anweisungen</option>
+            </select>
+          </div>
+
+          <p id="step1-error" class="error-msg">❌ Bitte fülle alle Felder aus und wähle einen gültigen Befehlstyp aus!</p>
+
+          <button type="button" id="btn-to-step2" style="background: var(--primary);">Weiter zu Schritt 2 ➔</button>
+        </div>
+
+        <div id="form-step-2" style="display: none;">
+          <div class="befehl-paper">
+            <h3>VORSCHAU BEFEHL</h3>
+            <p><strong>Zug:</strong> <span id="preview-zug">-</span> | <strong>Ort:</strong> <span id="preview-ort">-</span></p>
+            <p><strong>Fahrtart:</strong> <span id="preview-fahrtart">-</span> | <strong>Fdl:</strong> <span id="preview-fdl">-</span></p>
+            <p><strong>Gewählter Befehlstyp:</strong> <span id="preview-typ" style="color:var(--primary); font-weight:bold;">-</span></p>
+            <hr>
+            <div class="form-group">
+              <label for="befehl-text">Konkrete Anweisung / Einzelbefehle *</label>
+              <textarea id="befehl-text" rows="6" placeholder="z. B. Befehl 1: Sie dürfen am Signal A2 ohne Hauptsignalanschaustellung vorbeifahren. Höchstgeschwindigkeit 40 km/h." required></textarea>
+            </div>
+          </div>
+
+          <p id="step2-error" class="error-msg">❌ Bitte trage den Befehlsinhalt ein!</p>
+
+          <div style="display: flex; gap: 10px; margin-top: 15px;">
+            <button type="button" id="btn-back-to-step1" class="secondary" style="flex: 1;">Custom Back ⬅ Zurück</button>
+            <button type="button" id="btn-submit-befehl" style="background: var(--success); flex: 2;">Befehl ausfertigen & Zugriffscode erzeugen</button>
+          </div>
+        </div>
+
       </div>
 
       <div id="meine-befehle" class="tab-content">
@@ -374,8 +473,6 @@
       collection, 
       addDoc, 
       getDocs, 
-      doc, 
-      updateDoc, 
       query, 
       where 
     } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
@@ -394,13 +491,10 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    let currentBefehlDocId = null;
-    let userRole = "FDL"; // Für diesen Test standardmäßig FDL
-
-    // Lokaler Speicher für Demo/Offline-Zwecke
+    let userRole = "FDL";
     let localBefehle = [];
 
-    // Auth State Observer
+    // Auth Observer
     onAuthStateChanged(auth, (user) => {
       const loginScreen = document.getElementById("login-screen");
       const dashboard = document.getElementById("dashboard");
@@ -467,26 +561,81 @@
       });
     }
 
-    // 6-stelligen Zugriffscode generieren
     function generateAccessCode() {
       return Math.floor(100000 + Math.random() * 900000).toString();
     }
 
-    // BEFEHL ERSTELLEN (FDL)
-    document.getElementById("create-befehl-form").addEventListener("submit", async (e) => {
-      e.preventDefault();
+    /* --- SCHRITT-VALIDIERUNG & SCHRITT-WECHSEL --- */
 
-      const zugnummer = document.getElementById("zugnummer").value;
-      const standort = document.getElementById("standort").value;
-      const inhalt = document.getElementById("befehl-text").value;
+    // Wechsel von Schritt 1 zu Schritt 2
+    document.getElementById("btn-to-step2").addEventListener("click", () => {
+      const zug = document.getElementById("zugnummer").value.trim();
+      const ort = document.getElementById("standort").value.trim();
+      const arbeitsplatz = document.getElementById("arbeitsplatz").value.trim();
+      const befehlstyp = document.getElementById("befehlstyp").value;
+      const fahrtart = document.querySelector('input[name="fahrtart"]:checked').value;
+      const errorEl = document.getElementById("step1-error");
+
+      // Validierung: Alle Felder müssen ausgefüllt sein + Befehlstyp darf NICHT "BITTE_AUSWAEHLEN" sein
+      if (!zug || !ort || !arbeitsplatz || befehlstyp === "BITTE_AUSWAEHLEN") {
+        errorEl.style.display = "block";
+        return;
+      }
+
+      errorEl.style.display = "none";
+
+      // Daten in Vorschau von Schritt 2 schreiben
+      document.getElementById("preview-zug").innerText = zug;
+      document.getElementById("preview-ort").innerText = ort;
+      document.getElementById("preview-fahrtart").innerText = fahrtart;
+      document.getElementById("preview-fdl").innerText = arbeitsplatz;
+
+      const selText = document.getElementById("befehlstyp").options[document.getElementById("befehlstyp").selectedIndex].text;
+      document.getElementById("preview-typ").innerText = selText;
+
+      // Schritt 1 ausblenden, Schritt 2 anzeigen
+      document.getElementById("form-step-1").style.display = "none";
+      document.getElementById("form-step-2").style.display = "block";
+
+      document.getElementById("step-1-badge").classList.remove("active");
+      document.getElementById("step-2-badge").classList.add("active");
+    });
+
+    // Zurück zu Schritt 1
+    document.getElementById("btn-back-to-step1").addEventListener("click", () => {
+      document.getElementById("form-step-2").style.display = "none";
+      document.getElementById("form-step-1").style.display = "block";
+
+      document.getElementById("step-2-badge").classList.remove("active");
+      document.getElementById("step-1-badge").classList.add("active");
+    });
+
+    // Schritt 2: Befehl Ausfertigen & Speichern
+    document.getElementById("btn-submit-befehl").addEventListener("click", async () => {
+      const text = document.getElementById("befehl-text").value.trim();
+      const errorEl = document.getElementById("step2-error");
+
+      if (!text) {
+        errorEl.style.display = "block";
+        return;
+      }
+      errorEl.style.display = "none";
+
+      const zug = document.getElementById("zugnummer").value.trim();
+      const ort = document.getElementById("standort").value.trim();
+      const arbeitsplatz = document.getElementById("arbeitsplatz").value.trim();
+      const befehlstypText = document.getElementById("befehlstyp").options[document.getElementById("befehlstyp").selectedIndex].text;
       const accessCode = generateAccessCode();
-      const currentUser = auth.currentUser ? auth.currentUser.email : "Fdl-Admin";
+      const currentUser = auth.currentUser ? auth.currentUser.email : "Fdl";
+
+      const fullInhalt = `${befehlstypText}\n\nAnweisung:\n${text}`;
 
       const newBefehl = {
-        zugnummer: zugnummer,
+        zugnummer: zug,
         accessCode: accessCode,
-        standort: standort,
-        inhalt: inhalt,
+        standort: ort,
+        arbeitsplatz: arbeitsplatz,
+        inhalt: fullInhalt,
         fdl: currentUser,
         status: "Offen (Standorteingabe ausstehend)",
         createdAt: new Date().toLocaleString("de-DE")
@@ -495,16 +644,28 @@
       try {
         await addDoc(collection(db, "befehle"), newBefehl);
       } catch (err) {
-        console.log("Firestore nicht erreichbar, nutze lokalen Speicher:", err);
+        console.log("Speichere lokal:", err);
         localBefehle.push(newBefehl);
       }
 
-      // Zugriffscode oben anzeigen
+      // Zugriffscode anzeigen
       document.getElementById("generated-code-display").innerText = accessCode;
       document.getElementById("code-banner").style.display = "block";
 
-      document.getElementById("create-befehl-form").reset();
+      // Formular zurücksetzen & Schritt 1 wiederherstellen
+      document.getElementById("zugnummer").value = "";
+      document.getElementById("standort").value = "";
+      document.getElementById("arbeitsplatz").value = "";
+      document.getElementById("befehlstyp").value = "BITTE_AUSWAEHLEN";
+      document.getElementById("befehl-text").value = "";
+
+      document.getElementById("form-step-2").style.display = "none";
+      document.getElementById("form-step-1").style.display = "block";
+      document.getElementById("step-2-badge").classList.remove("active");
+      document.getElementById("step-1-badge").classList.add("active");
+
       loadActiveBefehle();
+      alert("Der Befehl wurde erfolgreich ausgefertigt!");
     });
 
     // BEFEHL ABRUFEN (TF)
@@ -530,7 +691,6 @@
       }
 
       if (gefundenerBefehl) {
-        currentBefehlDocId = gefundenerBefehl.id || "local";
         document.getElementById("befehl-details").style.display = "block";
         document.getElementById("detail-zug").innerText = gefundenerBefehl.zugnummer;
         document.getElementById("detail-standort").innerText = gefundenerBefehl.standort;
@@ -550,25 +710,25 @@
       }
     });
 
-    // Schritt 1: Standort senden
+    // Schritt 1 (TF): Standort übermitteln
     document.getElementById("btn-submit-standort").addEventListener("click", () => {
       const tfStandort = document.getElementById("tf-standort-input").value;
       if (!tfStandort) {
         alert("Bitte Standort angeben.");
         return;
       }
-      alert("Standort wurde erfasst. Bitte nun den Befehl lesen und quittieren.");
+      alert("Standort übermittelt. Bitte nun den Befehl lesen und quittieren.");
       document.getElementById("tf-standort-section").style.display = "none";
       document.getElementById("tf-quittieren-section").style.display = "block";
     });
 
-    // Schritt 2: Checkbox Check
+    // Checkbox für Quittierung
     document.getElementById("chk-gelesen").addEventListener("change", (e) => {
       document.getElementById("btn-quittieren").disabled = !e.target.checked;
     });
 
-    // Quittieren
-    document.getElementById("btn-quittieren").addEventListener("click", async () => {
+    // Quittieren (TF)
+    document.getElementById("btn-quittieren").addEventListener("click", () => {
       document.getElementById("detail-status").innerText = "Gültig";
       document.getElementById("detail-status").className = "badge badge-gueltig";
       document.getElementById("tf-quittieren-section").style.display = "none";
@@ -576,7 +736,7 @@
       loadActiveBefehle();
     });
 
-    // Befehle Laden / Tabellen aktualisieren
+    // Tabellen-Inhalte laden
     async function loadActiveBefehle() {
       const activeList = document.getElementById("aktive-befehle-list");
       const meineList = document.getElementById("meine-befehle-list");
