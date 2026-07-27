@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Digitaler Befehl - Dashboard</title>
+  <style>
+    :root {
+      --primary: #0056b3;
+      --bg: #f4f6f9;
+      --card-bg: #ffffff;
+      --text: #333;
+      --border: #cccccc;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Login Screen */
+    #login-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    .login-box {
+      background: var(--card-bg);
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    button {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    /* Dashboard Layout */
+    #dashboard {
+      display: none; /* Erst nach Login sichtbar */
+    }
+
+    header {
+      background-color: var(--primary);
+      color: white;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    nav {
+      background: #e9ecef;
+      padding: 10px 20px;
+      display: flex;
+      gap: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-btn {
+      background: none;
+      color: var(--text);
+      padding: 8px 16px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+    }
+
+    .nav-btn.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    main {
+      padding: 20px;
+      max-width: 1000px;
+      margin: auto;
+    }
+
+    .tab-content {
+      display: none;
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 6px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Tabellen Styling */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    th, td {
+      border: 1px solid var(--border);
+      padding: 10px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f1f1f1;
+    }
+
+    .status-aktiv {
+      color: green;
+      font-weight: bold;
+    }
+
+    .status-abgeschlossen {
+      color: gray;
+    }
+
+    /* Formular Styling */
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    .form-group input, .form-group textarea, .form-group select {
+      width: 100%;
+      padding: 8px;
+      box-sizing: border-box;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="login-screen">
+    <div class="login-box">
+      <h2>Digitaler Befehl - Anmelden</h2>
+      <p>Bitte melde dich an, um auf das Dashboard zuzugreifen.</p>
+      <button onclick="loginWithGoogle()">Mit Google anmelden</button>
+    </div>
+  </div>
+
+  <div id="dashboard">
+    <header>
+      <h1>Digitaler Befehl System</h1>
+      <div>
+        <span id="user-info">Aktiv als: -</span> 
+        <button onclick="logout()" style="background:#dc3545; margin-left:10px;">Abmelden</button>
+      </div>
+    </header>
+
+    <nav>
+      <button class="nav-btn active" onclick="showTab('aktive-befehle')">Alle aktiven Befehle</button>
+      <button class="nav-btn" onclick="showTab('befehl-abrufen')">Befehl abrufen</button>
+      <button class="nav-btn fdl-only" onclick="showTab('befehl-erstellen')">Befehl erstellen</button>
+      <button class="nav-btn fdl-only" onclick="showTab('meine-befehle')">Meine Befehle (24h)</button>
+    </nav>
+
+    <main>
+      <div id="aktive-befehle" class="tab-content active">
+        <h2>Alle aktiven Befehle</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Befehl-ID</th>
+              <th>Zugnummer</th>
+              <th>Standort / Betriebsstelle</th>
+              <th>Erstellt am</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="aktive-befehle-list">
+            <tr>
+              <td>#1001</td>
+              <td>Zug 4021</td>
+              <td>Bahnhof Nord</td>
+              <td>28.07.2026 12:00</td>
+              <td><span class="status-aktiv">Aktiv</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div id="befehl-abrufen" class="tab-content">
+        <h2>Befehl abrufen</h2>
+        <div class="form-group">
+          <label for="search-id">Befehl-ID oder Zugnummer eingeben:</label>
+          <input type="text" id="search-id" placeholder="z. B. 1001 oder Zug 4021">
+        </div>
+        <button onclick="searchBefehl()">Suchen</button>
+
+        <div id="befehl-details" style="margin-top: 20px; display: none;">
+          <hr>
+          <h3>Befehlsdetails</h3>
+          <p><strong>Befehls-Nr:</strong> <span id="detail-id">-</span></p>
+          <p><strong>Zug:</strong> <span id="detail-zug">-</span></p>
+          <p><strong>Inhalt:</strong></p>
+          <div id="detail-inhalt" style="background:#eef; padding:10px; border-radius:4px;">-</div>
+        </div>
+      </div>
+
+      <div id="befehl-erstellen" class="tab-content">
+        <h2>Neuen Befehl erstellen (FDL)</h2>
+        <form id="create-befehl-form" onsubmit="event.preventDefault(); saveBefehl();">
+          <div class="form-group">
+            <label for="zugnummer">Zugnummer / Triebfahrzeug:</label>
+            <input type="text" id="zugnummer" required placeholder="z. B. 4021">
+          </div>
+          <div class="form-group">
+            <label for="standort">Standort / Betriebsstelle:</label>
+            <input type="text" id="standort" required placeholder="z. B. Hauptbahnhof Signal A">
+          </div>
+          <div class="form-group">
+            <label for="befehl-text">Befehlsinhalt / Anweisung:</label>
+            <textarea id="befehl-text" rows="5" required placeholder="z. B. Befehl 1: Vorbeifahrt an Signal Halt zeigen..."></textarea>
+          </div>
+          <button type="submit">Befehl kostenpflichtig/verbindlich übermitteln</button>
+        </form>
+      </div>
+
+      <div id="meine-befehle" class="tab-content">
+        <h2>Meine erstellten Befehle (Letzte 24 Stunden)</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Befehl-ID</th>
+              <th>Zugnummer</th>
+              <th>Erstellt am</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="meine-befehle-list">
+            </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+
+  <script type="module">
+    // Importiere Firebase SDKs
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getFirestore, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    // TODO: Ersetze diese Daten mit deiner eigenen Firebase Konfiguration aus der Firebase Console!
+    const firebaseConfig = {
+      apiKey: "DEIN_API_KEY",
+      authDomain: "DEIN_PROJECT_ID.firebaseapp.com",
+      projectId: "DEIN_PROJECT_ID",
+      storageBucket: "DEIN_PROJECT_ID.appspot.com",
+      messagingSenderId: "DEINE_SENDER_ID",
+      appId: "DEINE_APP_ID"
+    };
+
+    // Firebase Initialisieren
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // Globale Rollen-Steuerung (Später über Firebase Firestore steuerbar)
+    let userRole = "FDL"; // Optionen: "FDL", "TF"
+
+    // Authentifizierung Status-Überwachung
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        document.getElementById("login-screen").style.display = "none";
+        document.getElementById("dashboard").style.display = "block";
+        document.getElementById("user-info").innerText = `${user.displayName} (${userRole})`;
+        
+        applyRolePermissions();
+      } else {
+        document.getElementById("login-screen").style.display = "flex";
+        document.getElementById("dashboard").style.display = "none";
+      }
+    });
+
+    // Login per Google Popup
+    window.loginWithGoogle = () => {
+      const provider = new GoogleAuthProvider();
+      signInWithPopup(auth, provider).catch((error) => {
+        alert("Fehler beim Login: " + error.message);
+      });
+    };
+
+    // Logout
+    window.logout = () => {
+      signOut(auth);
+    };
+
+    // Rollenrechte anwenden
+    function applyRolePermissions() {
+      const fdlElements = document.querySelectorAll(".fdl-only");
+      fdlElements.forEach(el => {
+        el.style.display = (userRole === "FDL") ? "inline-block" : "none";
+      });
+    }
+
+    // Tab-Umschaltung
+    window.showTab = (tabId) => {
+      document.querySelectorAll(".tab-content").forEach(tab => tab.classList.remove("active"));
+      document.querySelectorAll(".nav-btn").forEach(btn => btn.classList.remove("active"));
+
+      document.getElementById(tabId).classList.add("active");
+      event.target.classList.add("active");
+    };
+
+    // Platzhalter-Suchfunktion
+    window.searchBefehl = () => {
+      const queryVal = document.getElementById("search-id").value;
+      if(!queryVal) return;
+      
+      document.getElementById("befehl-details").style.display = "block";
+      document.getElementById("detail-id").innerText = queryVal;
+      document.getElementById("detail-zug").innerText = "Zug " + queryVal;
+      document.getElementById("detail-inhalt").innerText = "Beispiel-Befehl: Vorbeifahrt an Signal Halt erlaubt.";
+    };
+
+    // Platzhalter zum Speichern eines Befehls
+    window.saveBefehl = () => {
+      alert("Befehl wurde erfolgreich erstellt!");
+      document.getElementById("create-befehl-form").reset();
+      showTab('aktive-befehle');
+    };
+  </script>
+</body>
+</html>
