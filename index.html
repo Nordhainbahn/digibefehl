@@ -203,6 +203,14 @@
       font-size: 14px;
     }
 
+    .form-row {
+      display: flex;
+      gap: 15px;
+    }
+    .form-row .form-group {
+      flex: 1;
+    }
+
     .radio-group {
       display: flex;
       gap: 20px;
@@ -236,6 +244,14 @@
       margin-top: 0;
       border-bottom: 2px solid #333;
       padding-bottom: 10px;
+    }
+
+    .befehl-paper-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 15px;
+      font-size: 14px;
     }
 
     .locked-box {
@@ -339,12 +355,19 @@
           <div id="tf-content-section" style="display: none;">
             <div class="befehl-paper">
               <h3>DIGITALER BEFEHL - DB INFRA GO</h3>
-              <p><strong>Zugnummer:</strong> <span id="detail-zug">-</span></p>
-              <p><strong>Standort/Betriebsstelle:</strong> <span id="detail-standort">-</span></p>
-              <p><strong>Bestätigter Tf-Standort:</strong> <span id="detail-tf-standort">-</span></p>
-              <p><strong>Ausgestellt von (Fdl):</strong> <span id="detail-fdl">-</span></p>
+              <div class="befehl-paper-grid">
+                <div><strong>Zugnummer:</strong> <span id="detail-zug">-</span></div>
+                <div><strong>Fahrplanort/Betriebsstelle:</strong> <span id="detail-standort">-</span></div>
+                <div><strong>Bestätigter Tf-Standort:</strong> <span id="detail-tf-standort">-</span></div>
+                <div><strong>Ausgestellt von (Fdl):</strong> <span id="detail-fdl">-</span></div>
+                <div><strong>Von Signal / Abstand:</strong> <span id="detail-von-signal">-</span></div>
+                <div><strong>Bis Signal / Abstand:</strong> <span id="detail-bis-signal">-</span></div>
+                <div><strong>Gültig von:</strong> <span id="detail-gueltig-von">-</span></div>
+                <div><strong>Gültig bis:</strong> <span id="detail-gueltig-bis">-</span></div>
+              </div>
+              <p><strong>Grund:</strong> <span id="detail-grund">-</span></p>
               <hr>
-              <h4>BEFEHLSINHALT:</h4>
+              <h4>BEFEHLSTEXT / ANWEISUNG:</h4>
               <p id="detail-inhalt" style="white-space: pre-wrap; font-size: 15px; font-weight: bold; color:#000;">-</p>
               <hr>
               <p><strong>Status:</strong> <span id="detail-status" class="badge badge-offen">Standort bestätigt</span></p>
@@ -391,7 +414,7 @@
 
         <div class="step-indicator">
           <div id="step-1-badge" class="step active">Schritt 1: Kopfdaten & Befehlstyp</div>
-          <div id="step-2-badge" class="step">Schritt 2: Befehlsauswahl & Inhalt</div>
+          <div id="step-2-badge" class="step">Schritt 2: Orte, Zeiten & Befehlstext</div>
         </div>
 
         <div id="form-step-1">
@@ -457,20 +480,51 @@
         <div id="form-step-2" style="display: none;">
           <div class="befehl-paper">
             <h3 style="margin-bottom: 5px;">DB INFRA GO - BEFEHLSAUSFERTIGUNG</h3>
-            <p style="text-align:center; font-size:12px; margin-top:0;">SCHRITT 2: BEFEHLSAUSWAHL & INHALT</p>
+            <p style="text-align:center; font-size:12px; margin-top:0;">SCHRITT 2: ERGÄNZENDE ANGABEN & BEFEHLSTEXT</p>
             <hr>
-            <p><strong>Zugnummer:</strong> <span id="preview-zug">-</span> | <strong>Fahrtart:</strong> <span id="preview-fahrtart">-</span></p>
-            <p><strong>Ort/Betriebsstelle:</strong> <span id="preview-ort">-</span> | <strong>Fdl:</strong> <span id="preview-fdl">-</span></p>
+            <div class="befehl-paper-grid">
+              <div><strong>Zugnummer:</strong> <span id="preview-zug">-</span></div>
+              <div><strong>Fahrtart:</strong> <span id="preview-fahrtart">-</span></div>
+              <div><strong>Ort/Betriebsstelle:</strong> <span id="preview-ort">-</span></div>
+              <div><strong>Fdl:</strong> <span id="preview-fdl">-</span></div>
+            </div>
             <p><strong>Ausgewählter Befehlstyp:</strong> <span id="preview-typ" style="color:var(--primary); font-weight:bold;">-</span></p>
             <hr>
             
+            <div class="form-row">
+              <div class="form-group">
+                <label for="von-signal">Von Signal / Abstand</label>
+                <input type="text" id="von-signal" placeholder="z. B. Signal A101 / km 22.4">
+              </div>
+              <div class="form-group">
+                <label for="bis-signal">Bis Signal / Abstand</label>
+                <input type="text" id="bis-signal" placeholder="z. B. Signal B202 / km 28.1">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="gueltig-von">Gültig von: (Datum / Uhrzeit)</label>
+                <input type="datetime-local" id="gueltig-von">
+              </div>
+              <div class="form-group">
+                <label for="gueltig-bis">Gültig bis: (Datum / Uhrzeit)</label>
+                <input type="datetime-local" id="gueltig-bis">
+              </div>
+            </div>
+
             <div class="form-group">
-              <label for="befehl-text">Konkrete Anweisung / Text für den Befehl *</label>
-              <textarea id="befehl-text" rows="6" placeholder="z. B. Sie dürfen am Signal A101 ohne Hauptsignalanschaustellung vorbeifahren. Höchstgeschwindigkeit 40 km/h bis zum nächsten Hauptsignal." required></textarea>
+              <label for="grund">Grund</label>
+              <input type="text" id="grund" placeholder="z. B. Signalstörung / Gleisarbeiten">
+            </div>
+
+            <div class="form-group">
+              <label for="befehl-text">Befehlstext / Anweisung *</label>
+              <textarea id="befehl-text" rows="5" placeholder="z. B. Sie dürfen am Signal A101 ohne Hauptsignalanschaustellung vorbeifahren. Höchstgeschwindigkeit 40 km/h bis zum nächsten Hauptsignal." required></textarea>
             </div>
           </div>
 
-          <div id="step2-error" class="error-msg">⚠️ Bitte gib einen Befehlsinhalt ein!</div>
+          <div id="step2-error" class="error-msg">⚠️ Bitte gib einen Befehlstext ein!</div>
 
           <div style="display: flex; gap: 10px; margin-top: 15px;">
             <button type="button" id="btn-back-to-step1" class="secondary" style="flex: 1;">⬅ Zurück zu Schritt 1</button>
@@ -546,7 +600,6 @@
         loginScreen.style.display = "none";
         dashboard.style.display = "block";
 
-        // ROLLE AUS FIREBASE FIRESTORE (Kollektion: 'users', Dok: User-UID) HILFE DES VON DIR ANGELEGTEN EINTRAGS LADEN
         try {
           const userDocRef = doc(db, "users", user.uid);
           const userDocSnap = await getDoc(userDocRef);
@@ -554,7 +607,6 @@
           if (userDocSnap.exists() && userDocSnap.data().role) {
             currentUserRole = userDocSnap.data().role.toUpperCase();
           } else {
-            // Fallback, falls in Firestore noch keine Rolle explizit hinterlegt ist
             currentUserRole = "FDL";
           }
         } catch (e) {
@@ -672,6 +724,11 @@
     // Befehl ausfertigen (Fdl)
     document.getElementById("btn-submit-befehl").addEventListener("click", async () => {
       const text = document.getElementById("befehl-text").value.trim();
+      const vonSignal = document.getElementById("von-signal").value.trim();
+      const bisSignal = document.getElementById("bis-signal").value.trim();
+      const gueltigVon = document.getElementById("gueltig-von").value;
+      const gueltigBis = document.getElementById("gueltig-bis").value;
+      const grund = document.getElementById("grund").value.trim();
       const errorEl = document.getElementById("step2-error");
 
       if (!text) {
@@ -687,13 +744,20 @@
       const accessCode = generateAccessCode();
       const currentUser = auth.currentUser ? auth.currentUser.email : "Fdl";
 
+      const formatDateTime = (dt) => dt ? new Date(dt).toLocaleString("de-DE") : "-";
+
       const newBefehl = {
         zugnummer: zug,
         accessCode: accessCode,
         standort: ort,
         arbeitsplatz: arbeitsplatz,
         befehlstyp: befehlstypText,
-        inhalt: `${befehlstypText}\n\nAnweisung:\n${text}`,
+        vonSignal: vonSignal || "-",
+        bisSignal: bisSignal || "-",
+        gueltigVon: formatDateTime(gueltigVon),
+        gueltigBis: formatDateTime(gueltigBis),
+        grund: grund || "-",
+        inhalt: text,
         fdl: currentUser,
         tfStandort: "",
         status: "Erstellt (Standorteingabe erforderlich)",
@@ -709,10 +773,16 @@
       document.getElementById("generated-code-display").innerText = accessCode;
       document.getElementById("code-banner").style.display = "block";
 
+      // Formular zurücksetzen
       document.getElementById("zugnummer").value = "";
       document.getElementById("standort").value = "";
       document.getElementById("arbeitsplatz").value = "";
       document.getElementById("befehlstyp").value = "BITTE_AUSWAEHLEN";
+      document.getElementById("von-signal").value = "";
+      document.getElementById("bis-signal").value = "";
+      document.getElementById("gueltig-von").value = "";
+      document.getElementById("gueltig-bis").value = "";
+      document.getElementById("grund").value = "";
       document.getElementById("befehl-text").value = "";
 
       document.getElementById("form-step-2").style.display = "none";
@@ -769,6 +839,11 @@
         document.getElementById("detail-standort").innerText = b.standort;
         document.getElementById("detail-tf-standort").innerText = b.tfStandort || "-";
         document.getElementById("detail-fdl").innerText = b.fdl;
+        document.getElementById("detail-von-signal").innerText = b.vonSignal || "-";
+        document.getElementById("detail-bis-signal").innerText = b.bisSignal || "-";
+        document.getElementById("detail-gueltig-von").innerText = b.gueltigVon || "-";
+        document.getElementById("detail-gueltig-bis").innerText = b.gueltigBis || "-";
+        document.getElementById("detail-grund").innerText = b.grund || "-";
         document.getElementById("detail-inhalt").innerText = b.inhalt;
         document.getElementById("detail-status").innerText = b.status;
 
