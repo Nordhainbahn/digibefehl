@@ -38,11 +38,34 @@
       padding: 30px;
       border-radius: 8px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      width: 320px;
+      width: 360px;
       text-align: center;
     }
 
-    .login-box input {
+    .auth-toggle {
+      display: flex;
+      margin-bottom: 20px;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .auth-toggle button {
+      flex: 1;
+      background: none;
+      color: var(--text);
+      border: none;
+      padding: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      border-bottom: 2px solid transparent;
+      margin-top: 0;
+    }
+
+    .auth-toggle button.active {
+      border-bottom: 2px solid var(--primary);
+      color: var(--primary);
+    }
+
+    .login-box input, .login-box select {
       width: 100%;
       padding: 10px;
       margin: 8px 0;
@@ -64,18 +87,12 @@
       margin-top: 10px;
     }
 
-    button.secondary {
-      background-color: #6c757d;
-    }
+    button.secondary { background-color: #6c757d; }
+    button.success { background-color: var(--success); }
+    button:hover { opacity: 0.9; }
 
-    button:hover {
-      opacity: 0.9;
-    }
-
-    /* Dashboard */
-    #dashboard {
-      display: none;
-    }
+    /* Dashboard Layout */
+    #dashboard { display: none; }
 
     header {
       background-color: var(--primary);
@@ -92,6 +109,7 @@
       display: flex;
       gap: 10px;
       border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
     }
 
     .nav-btn {
@@ -126,9 +144,7 @@
       box-shadow: 0 2px 5px rgba(0,0,0,0.05);
     }
 
-    .tab-content.active {
-      display: block;
-    }
+    .tab-content.active { display: block; }
 
     /* Tabellen */
     table {
@@ -144,9 +160,7 @@
       font-size: 14px;
     }
 
-    th {
-      background-color: #f1f1f1;
-    }
+    th { background-color: #f1f1f1; }
 
     .badge {
       padding: 4px 8px;
@@ -157,6 +171,7 @@
       display: inline-block;
     }
     .badge-offen { background-color: var(--warning); color: #000; }
+    .badge-abgleich { background-color: #17a2b8; }
     .badge-gueltig { background-color: var(--success); }
 
     /* Code Banner */
@@ -178,7 +193,7 @@
       margin: 10px 0;
     }
 
-    /* Formular & Schritt-System */
+    /* Formulare & Schritte */
     .step-indicator {
       display: flex;
       gap: 10px;
@@ -200,16 +215,8 @@
       color: white;
     }
 
-    .form-group {
-      margin-bottom: 15px;
-    }
-
-    .form-group label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: bold;
-    }
-
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
     .form-group input, .form-group textarea, .form-group select {
       width: 100%;
       padding: 10px;
@@ -224,20 +231,20 @@
       gap: 20px;
       margin-top: 5px;
     }
-
-    .radio-group label {
-      font-weight: normal;
-      cursor: pointer;
-    }
+    .radio-group label { font-weight: normal; cursor: pointer; }
 
     .error-msg {
       color: var(--danger);
       font-weight: bold;
       margin-top: 10px;
       display: none;
+      background: #f8d7da;
+      padding: 10px;
+      border-radius: 4px;
+      border: 1px solid #f5c6cb;
     }
 
-    /* Papier-Vorschau */
+    /* Papier-Vorschau DB Befehl */
     .befehl-paper {
       background: #fffbe6;
       border: 2px solid #333;
@@ -250,8 +257,19 @@
     .befehl-paper h3 {
       text-align: center;
       margin-top: 0;
-      border-bottom: 1px solid #333;
+      border-bottom: 2px solid #333;
       padding-bottom: 10px;
+    }
+
+    .locked-box {
+      background: #f8d7da;
+      border: 1px solid #f5c6cb;
+      padding: 15px;
+      border-radius: 4px;
+      color: #721c24;
+      font-weight: bold;
+      text-align: center;
+      margin-top: 15px;
     }
   </style>
 </head>
@@ -260,12 +278,31 @@
   <div id="login-screen">
     <div class="login-box">
       <h2>Digitaler Befehl</h2>
-      <p>Bitte mit deinen Zugangsdaten anmelden</p>
       
+      <div class="auth-toggle">
+        <button id="toggle-login" class="active" type="button">Anmelden</button>
+        <button id="toggle-register" type="button">Konto erstellen</button>
+      </div>
+
       <form id="login-form">
         <input type="email" id="auth-email" placeholder="E-Mail Adresse" required>
         <input type="password" id="auth-password" placeholder="Passwort" required>
-        <button type="submit" id="btn-login">Anmelden</button>
+        <button type="submit">Anmelden</button>
+      </form>
+
+      <form id="register-form" style="display: none;">
+        <input type="email" id="reg-email" placeholder="E-Mail Adresse" required>
+        <input type="password" id="reg-password" placeholder="Passwort (min. 6 Zeichen)" required>
+        
+        <div style="text-align: left; margin-top: 5px;">
+          <label for="reg-role" style="font-weight: bold; font-size: 13px;">Rolle in Firebase festlegen:</label>
+          <select id="reg-role">
+            <option value="FDL" selected>Fahrdienstleiter (Fdl)</option>
+            <option value="TF">Triebfahrzeugführer (Tf)</option>
+          </select>
+        </div>
+
+        <button type="submit" class="success">Neues Konto erstellen</button>
       </form>
       
       <p id="auth-error" style="color: red; font-size: 13px; margin-top: 10px; word-break: break-word;"></p>
@@ -274,16 +311,17 @@
 
   <div id="dashboard">
     <header>
-      <h1>Digitaler Befehl System</h1>
+      <h1>Digitaler Befehl System (DB InfraGO Standard)</h1>
       <div>
-        <span id="user-info">Angemeldet als: -</span> 
-        <button id="btn-logout" style="background:#dc3545; margin-left:10px; width:auto; margin-top:0;">Abmelden</button>
+        <span id="user-info">Angemeldet als: -</span>
+        <button id="btn-logout" style="background:#dc3545; width:auto; margin-left:15px; margin-top:0;">Abmelden</button>
       </div>
     </header>
 
     <nav>
       <button class="nav-btn active" data-tab="aktive-befehle">Alle aktiven Befehle</button>
-      <button class="nav-btn" data-tab="befehl-abrufen">Befehl abrufen (Tf/Fdl)</button>
+      <button class="nav-btn tf-only" data-tab="befehl-abrufen">Befehl abrufen (Tf)</button>
+      <button class="nav-btn fdl-only" data-tab="standort-abgleich">Standortabgleich (Fdl)</button>
       <button class="nav-btn fdl-only" data-tab="befehl-erstellen">Befehl erstellen (Fdl)</button>
       <button class="nav-btn fdl-only" data-tab="meine-befehle">Meine Befehle (24h)</button>
     </nav>
@@ -297,15 +335,14 @@
             <tr>
               <th>Zugnummer</th>
               <th>Zugriffscode</th>
-              <th>Standort / Betriebsstelle</th>
+              <th>Standort (Fdl)</th>
+              <th>Gemeldeter Standort (Tf)</th>
               <th>Erstellt am</th>
               <th>Status</th>
             </tr>
           </thead>
           <tbody id="aktive-befehle-list">
-            <tr>
-              <td colspan="5" style="text-align: center;">Keine aktiven Befehle vorhanden.</td>
-            </tr>
+            <tr><td colspan="6" style="text-align: center;">Keine Befehle vorhanden.</td></tr>
           </tbody>
         </table>
       </div>
@@ -314,45 +351,75 @@
         <h2>Befehl abrufen (Triebfahrzeugführer)</h2>
         <div style="display: flex; gap: 10px;">
           <div class="form-group" style="flex: 1;">
-            <label for="search-zug">Zugnummer:</label>
-            <input type="text" id="search-zug" placeholder="z. B. 4021">
+            <label for="search-zug">Zugnummer *</label>
+            <input type="text" id="search-zug" placeholder="z. B. 85332">
           </div>
           <div class="form-group" style="flex: 1;">
-            <label for="search-code">6-stelliger Zugriffscode:</label>
+            <label for="search-code">6-stelliger Zugriffscode *</label>
             <input type="text" id="search-code" placeholder="z. B. 482910" maxlength="6">
           </div>
         </div>
-        <button id="btn-search" style="width: auto;">Befehl abrufen</button>
+        <button id="btn-search" style="width: auto;">Befehl suchen & abrufen</button>
 
         <div id="befehl-details" style="display: none; margin-top: 20px;">
-          <div class="befehl-paper">
-            <h3>DIGITALER BEFEHL</h3>
-            <p><strong>Zugnummer:</strong> <span id="detail-zug">-</span></p>
-            <p><strong>Standort/Betriebsstelle:</strong> <span id="detail-standort">-</span></p>
-            <p><strong>Ausgestellt von (Fdl):</strong> <span id="detail-fdl">-</span></p>
-            <hr>
-            <h4>Befehlsinhalt:</h4>
-            <p id="detail-inhalt" style="white-space: pre-wrap; font-size: 15px;">-</p>
-            <hr>
-            <p><strong>Status:</strong> <span id="detail-status" class="badge badge-offen">Offen</span></p>
-          </div>
-
-          <div id="tf-standort-section" style="margin-top: 15px; background: #eef; padding: 15px; border-radius: 4px;">
-            <h4>Schritt 1: Aktuellen Standort eingeben (Tf)</h4>
+          
+          <div id="tf-standort-section" style="background: #eef; padding: 15px; border-radius: 4px; border: 1px solid var(--primary);">
+            <h4>Schritt 1: Aktuellen Standort übermitteln (Tf)</h4>
+            <p>Bevor der Befehlsinhalt eingesehen werden kann, musst du deinen genauen Standort eingeben und an den Fdl übermitteln.</p>
             <div class="form-group">
-              <input type="text" id="tf-standort-input" placeholder="Genaue Standortangabe (z.B. Am Signal A / km 14.2)">
+              <label for="tf-standort-input">Standortangabe (z. B. Signal A101 / km 24.4 / Gleis 3):</label>
+              <input type="text" id="tf-standort-input" placeholder="Aktuellen Standort eintragen">
             </div>
-            <button id="btn-submit-standort" style="background: var(--primary);">Standort übermitteln</button>
+            <button id="btn-submit-standort">Standort an Fdl senden</button>
           </div>
 
-          <div id="tf-quittieren-section" style="margin-top: 15px; background: #eef; padding: 15px; border-radius: 4px; display: none;">
-            <h4>Schritt 2: Befehl lesen und quittieren</h4>
-            <label style="display: block; margin-bottom: 10px;">
-              <input type="checkbox" id="chk-gelesen"> Ich habe die Anweisungen gelesen und verstanden.
-            </label>
-            <button id="btn-quittieren" style="background: var(--success);" disabled>Befehl quittieren & Gültig schalten</button>
+          <div id="tf-waiting-section" class="locked-box" style="display: none;">
+            ⏳ Standort wurde an den Fdl übermittelt.<br>
+            Bitte warte, bis der Fahrdienstleiter deinen Standort bestätigt hat. Danach kannst du den Befehl hier einsehen.
           </div>
+
+          <div id="tf-content-section" style="display: none;">
+            <div class="befehl-paper">
+              <h3>DIGITALER BEFEHL - DB INFRA GO</h3>
+              <p><strong>Zugnummer:</strong> <span id="detail-zug">-</span></p>
+              <p><strong>Standort/Betriebsstelle:</strong> <span id="detail-standort">-</span></p>
+              <p><strong>Bestätigter Tf-Standort:</strong> <span id="detail-tf-standort">-</span></p>
+              <p><strong>Ausgestellt von (Fdl):</strong> <span id="detail-fdl">-</span></p>
+              <hr>
+              <h4>BEFEHLSINHALT:</h4>
+              <p id="detail-inhalt" style="white-space: pre-wrap; font-size: 15px; font-weight: bold; color:#000;">-</p>
+              <hr>
+              <p><strong>Status:</strong> <span id="detail-status" class="badge badge-offen">Standort bestätigt</span></p>
+            </div>
+
+            <div id="tf-quittieren-section" style="margin-top: 15px; background: #eef; padding: 15px; border-radius: 4px;">
+              <h4>Schritt 2: Befehl quittieren</h4>
+              <label style="display: block; margin-bottom: 10px;">
+                <input type="checkbox" id="chk-gelesen"> Ich habe die Befehle vollständig gelesen, verstanden und werde sie ausführen.
+              </label>
+              <button id="btn-quittieren" class="success" disabled>Befehl quittieren & Gültig schalten</button>
+            </div>
+          </div>
+
         </div>
+      </div>
+
+      <div id="standort-abgleich" class="tab-content">
+        <h2>Standortabgleich ausstehend (Fdl)</h2>
+        <p>Hier erscheinen Befehle, bei denen der Triebfahrzeugführer seinen Standort übermittelt hat und eine Bestätigung durch den Fdl erforderlich ist.</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Zugnummer</th>
+              <th>Standort laut Befehl</th>
+              <th>Gemeldeter Standort (Tf)</th>
+              <th>Aktion</th>
+            </tr>
+          </thead>
+          <tbody id="standort-abgleich-list">
+            <tr><td colspan="4" style="text-align:center;">Keine ausstehenden Standortabgleiche.</td></tr>
+          </tbody>
+        </table>
       </div>
 
       <div id="befehl-erstellen" class="tab-content">
@@ -361,23 +428,23 @@
         <div id="code-banner" class="code-banner">
           <p style="margin: 0; font-weight: bold; color: #555;">📢 Zugriffscode für den Triebfahrzeugführer:</p>
           <div id="generated-code-display" class="code-display">------</div>
-          <p style="margin: 0; font-size: 13px; color: #666;">Teile diesen Code dem Lokführer über den Zugfunk / Voice-Chat mit!</p>
+          <p style="margin: 0; font-size: 13px; color: #666;">Teile diesen Code dem Lokführer über den Zugfunk (Voice) mit!</p>
         </div>
 
         <div class="step-indicator">
           <div id="step-1-badge" class="step active">Schritt 1: Kopfdaten & Befehlstyp</div>
-          <div id="step-2-badge" class="step">Schritt 2: Befehlsinhalt & Ausfertigung</div>
+          <div id="step-2-badge" class="step">Schritt 2: Befehlsauswahl & Inhalt</div>
         </div>
 
         <div id="form-step-1">
           <div class="form-group">
             <label for="zugnummer">Triebfahrzeugnummer / Zugnummer *</label>
-            <input type="text" id="zugnummer" placeholder="z. B. 4021" required>
+            <input type="text" id="zugnummer" placeholder="z. B. 85332" required>
           </div>
 
           <div class="form-group">
             <label for="standort">Betriebsstelle / Ort *</label>
-            <input type="text" id="standort" placeholder="z. B. Hbf Signal A" required>
+            <input type="text" id="standort" placeholder="z. B. Bahnhof Nord / Signal A" required>
           </div>
 
           <div class="form-group">
@@ -390,7 +457,7 @@
 
           <div class="form-group">
             <label for="arbeitsplatz">Arbeitsplatz / Fdl-Bezeichnung *</label>
-            <input type="text" id="arbeitsplatz" placeholder="z. B. Fdl Stellwerk Nord" required>
+            <input type="text" id="arbeitsplatz" placeholder="z. B. Stellwerk Fdl FKS" required>
           </div>
 
           <div class="form-group">
@@ -424,29 +491,32 @@
             </select>
           </div>
 
-          <p id="step1-error" class="error-msg">❌ Bitte fülle alle Felder aus und wähle einen gültigen Befehlstyp aus!</p>
+          <div id="step1-error" class="error-msg">⚠️ Bitte fülle ALLE Felder aus und wähle einen gültigen Befehlstyp! ("Bitte auswählen" ist ungültig)</div>
 
-          <button type="button" id="btn-to-step2" style="background: var(--primary);">Weiter zu Schritt 2 ➔</button>
+          <button type="button" id="btn-to-step2" style="margin-top: 15px;">Weiter zu Schritt 2 ➔</button>
         </div>
 
         <div id="form-step-2" style="display: none;">
           <div class="befehl-paper">
-            <h3>VORSCHAU BEFEHL</h3>
-            <p><strong>Zug:</strong> <span id="preview-zug">-</span> | <strong>Ort:</strong> <span id="preview-ort">-</span></p>
-            <p><strong>Fahrtart:</strong> <span id="preview-fahrtart">-</span> | <strong>Fdl:</strong> <span id="preview-fdl">-</span></p>
-            <p><strong>Gewählter Befehlstyp:</strong> <span id="preview-typ" style="color:var(--primary); font-weight:bold;">-</span></p>
+            <h3 style="margin-bottom: 5px;">DB INFRA GO - BEFEHLSAUSFERTIGUNG</h3>
+            <p style="text-align:center; font-size:12px; margin-top:0;">SCHRITT 2: BEFEHLSAUSWAHL & INHALT</p>
             <hr>
+            <p><strong>Zugnummer:</strong> <span id="preview-zug">-</span> | <strong>Fahrtart:</strong> <span id="preview-fahrtart">-</span></p>
+            <p><strong>Ort/Betriebsstelle:</strong> <span id="preview-ort">-</span> | <strong>Fdl:</strong> <span id="preview-fdl">-</span></p>
+            <p><strong>Ausgewählter Befehlstyp:</strong> <span id="preview-typ" style="color:var(--primary); font-weight:bold;">-</span></p>
+            <hr>
+            
             <div class="form-group">
-              <label for="befehl-text">Konkrete Anweisung / Einzelbefehle *</label>
-              <textarea id="befehl-text" rows="6" placeholder="z. B. Befehl 1: Sie dürfen am Signal A2 ohne Hauptsignalanschaustellung vorbeifahren. Höchstgeschwindigkeit 40 km/h." required></textarea>
+              <label for="befehl-text">Konkrete Anweisung / Text für den Befehl *</label>
+              <textarea id="befehl-text" rows="6" placeholder="z. B. Sie dürfen am Signal A101 ohne Hauptsignalanschaustellung vorbeifahren. Höchstgeschwindigkeit 40 km/h bis zum nächsten Hauptsignal." required></textarea>
             </div>
           </div>
 
-          <p id="step2-error" class="error-msg">❌ Bitte trage den Befehlsinhalt ein!</p>
+          <div id="step2-error" class="error-msg">⚠️ Bitte gib einen Befehlsinhalt ein!</div>
 
           <div style="display: flex; gap: 10px; margin-top: 15px;">
-            <button type="button" id="btn-back-to-step1" class="secondary" style="flex: 1;">Custom Back ⬅ Zurück</button>
-            <button type="button" id="btn-submit-befehl" style="background: var(--success); flex: 2;">Befehl ausfertigen & Zugriffscode erzeugen</button>
+            <button type="button" id="btn-back-to-step1" class="secondary" style="flex: 1;">⬅ Zurück zu Schritt 1</button>
+            <button type="button" id="btn-submit-befehl" class="success" style="flex: 2;">Befehl ausfertigen & Zugriffscode erzeugen</button>
           </div>
         </div>
 
@@ -464,9 +534,7 @@
             </tr>
           </thead>
           <tbody id="meine-befehle-list">
-            <tr>
-              <td colspan="4" style="text-align: center;">Keine Befehle vorhanden.</td>
-            </tr>
+            <tr><td colspan="4" style="text-align: center;">Keine Befehle vorhanden.</td></tr>
           </tbody>
         </table>
       </div>
@@ -479,6 +547,7 @@
     import { 
       getAuth, 
       signInWithEmailAndPassword, 
+      createUserWithEmailAndPassword,
       signOut, 
       onAuthStateChanged 
     } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
@@ -486,12 +555,15 @@
       getFirestore, 
       collection, 
       addDoc, 
+      getDoc,
+      setDoc,
       getDocs, 
+      doc, 
+      updateDoc, 
       query, 
       where 
     } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
 
-    // Firebase Config
     const firebaseConfig = {
       apiKey: "AIzaSyCskjAJulPoFytuG4yODY19az1529fsdIk",
       authDomain: "digibefehl-nhb.firebaseapp.com",
@@ -505,28 +577,92 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    let userRole = "FDL";
+    let currentUserRole = "FDL";
+    let activeBefehlObject = null;
     let localBefehle = [];
 
-    // Auth Observer
-    onAuthStateChanged(auth, (user) => {
+    // UI Toggle zwischen Anmelden & Registrieren
+    const btnToggleLogin = document.getElementById("toggle-login");
+    const btnToggleRegister = document.getElementById("toggle-register");
+    const formLogin = document.getElementById("login-form");
+    const formRegister = document.getElementById("register-form");
+
+    btnToggleLogin.addEventListener("click", () => {
+      btnToggleLogin.classList.add("active");
+      btnToggleRegister.classList.remove("active");
+      formLogin.style.display = "block";
+      formRegister.style.display = "none";
+      document.getElementById("auth-error").innerText = "";
+    });
+
+    btnToggleRegister.addEventListener("click", () => {
+      btnToggleRegister.classList.add("active");
+      btnToggleLogin.classList.remove("active");
+      formRegister.style.display = "block";
+      formLogin.style.display = "none";
+      document.getElementById("auth-error").innerText = "";
+    });
+
+    // Auth Observer: Liest die Rolle direkt aus Firebase Firestore!
+    onAuthStateChanged(auth, async (user) => {
       const loginScreen = document.getElementById("login-screen");
       const dashboard = document.getElementById("dashboard");
-      
+
       if (user) {
         loginScreen.style.display = "none";
         dashboard.style.display = "block";
-        document.getElementById("user-info").innerText = `${user.email} (${userRole})`;
+
+        // ROLLE AUS FIREBASE FIRESTORE LADEN
+        try {
+          const userDocRef = doc(db, "users", user.uid);
+          const userDocSnap = await getDoc(userDocRef);
+
+          if (userDocSnap.exists()) {
+            currentUserRole = userDocSnap.data().role || "FDL";
+          } else {
+            // Falls der User in Auth existiert, aber noch kein Doc hat -> Standard anlegen
+            currentUserRole = "FDL";
+            await setDoc(userDocRef, { email: user.email, role: currentUserRole });
+          }
+        } catch (e) {
+          console.error("Fehler beim Abrufen der Rolle aus Firebase:", e);
+        }
+
+        document.getElementById("user-info").innerText = `${user.email} (${currentUserRole === 'FDL' ? 'Fahrdienstleiter' : 'Triebfahrzeugführer'})`;
         applyRolePermissions();
-        loadActiveBefehle();
+        loadAllBefehle();
       } else {
         loginScreen.style.display = "flex";
         dashboard.style.display = "none";
       }
     });
 
+    // Rollenbasierte Sichtbarkeit anpassen
+    function applyRolePermissions() {
+      const isFdl = (currentUserRole === "FDL");
+
+      document.querySelectorAll(".fdl-only").forEach(el => el.style.display = isFdl ? "inline-block" : "none");
+      document.querySelectorAll(".tf-only").forEach(el => el.style.display = !isFdl ? "inline-block" : "none");
+
+      if (!isFdl) {
+        switchTab("befehl-abrufen");
+      } else {
+        switchTab("aktive-befehle");
+      }
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll(".tab-content").forEach(tab => tab.classList.remove("active"));
+      document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
+
+      const targetTab = document.getElementById(tabId);
+      const targetBtn = document.querySelector(`.nav-btn[data-tab="${tabId}"]`);
+      if (targetTab) targetTab.classList.add("active");
+      if (targetBtn) targetBtn.classList.add("active");
+    }
+
     // Login Handler
-    document.getElementById("login-form").addEventListener("submit", (e) => {
+    formLogin.addEventListener("submit", (e) => {
       e.preventDefault();
       const email = document.getElementById("auth-email").value;
       const pass = document.getElementById("auth-password").value;
@@ -535,53 +671,60 @@
       errorEl.innerText = "Anmeldung läuft...";
 
       signInWithEmailAndPassword(auth, email, pass)
-        .then(() => {
-          errorEl.innerText = "";
-        })
+        .then(() => { errorEl.innerText = ""; })
         .catch((error) => {
-          if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
-            errorEl.innerText = "Fehler: E-Mail oder Passwort ist falsch.";
+          if (['auth/invalid-credential','auth/user-not-found','auth/wrong-password'].includes(error.code)) {
+            errorEl.innerText = "Fehler: E-Mail oder Passwort falsch.";
           } else {
             errorEl.innerText = "Fehler: " + error.message;
           }
         });
     });
 
-    // Logout
-    document.getElementById("btn-logout").addEventListener("click", () => {
-      signOut(auth);
+    // Registrierung Handler: Speichert neuen User mit gewählter Rolle in Firebase
+    formRegister.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("reg-email").value;
+      const pass = document.getElementById("reg-password").value;
+      const selectedRole = document.getElementById("reg-role").value;
+      const errorEl = document.getElementById("auth-error");
+
+      errorEl.innerText = "Konto wird in Firebase erstellt...";
+
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
+        const user = userCredential.user;
+
+        // Rolle im Firestore User-Dokument speichern
+        await setDoc(doc(db, "users", user.uid), {
+          email: email,
+          role: selectedRole,
+          createdAt: new Date().toISOString()
+        });
+
+        errorEl.innerText = "";
+      } catch (error) {
+        errorEl.innerText = "Fehler bei Registrierung: " + error.message;
+      }
     });
 
-    // Navigation Tabs
+    // Logout
+    document.getElementById("btn-logout").addEventListener("click", () => signOut(auth));
+
+    // Navigation Tabs Event Handler
     document.querySelectorAll(".nav-btn").forEach(btn => {
       btn.addEventListener("click", (e) => {
         const targetTab = e.target.getAttribute("data-tab");
-
-        document.querySelectorAll(".tab-content").forEach(tab => tab.classList.remove("active"));
-        document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
-
-        document.getElementById(targetTab).classList.add("active");
-        e.target.classList.add("active");
-
-        if (targetTab === 'aktive-befehle' || targetTab === 'meine-befehle') {
-          loadActiveBefehle();
-        }
+        switchTab(targetTab);
+        loadAllBefehle();
       });
     });
-
-    function applyRolePermissions() {
-      document.querySelectorAll(".fdl-only").forEach(el => {
-        el.style.display = (userRole === "FDL") ? "inline-block" : "none";
-      });
-    }
 
     function generateAccessCode() {
       return Math.floor(100000 + Math.random() * 900000).toString();
     }
 
-    /* --- SCHRITT-VALIDIERUNG & SCHRITT-WECHSEL --- */
-
-    // Wechsel von Schritt 1 zu Schritt 2
+    /* --- SCHRITT 1 ➔ SCHRITT 2 VALIDIERUNG --- */
     document.getElementById("btn-to-step2").addEventListener("click", () => {
       const zug = document.getElementById("zugnummer").value.trim();
       const ort = document.getElementById("standort").value.trim();
@@ -590,7 +733,6 @@
       const fahrtart = document.querySelector('input[name="fahrtart"]:checked').value;
       const errorEl = document.getElementById("step1-error");
 
-      // Validierung: Alle Felder müssen ausgefüllt sein + Befehlstyp darf NICHT "BITTE_AUSWAEHLEN" sein
       if (!zug || !ort || !arbeitsplatz || befehlstyp === "BITTE_AUSWAEHLEN") {
         errorEl.style.display = "block";
         return;
@@ -598,7 +740,6 @@
 
       errorEl.style.display = "none";
 
-      // Daten in Vorschau von Schritt 2 schreiben
       document.getElementById("preview-zug").innerText = zug;
       document.getElementById("preview-ort").innerText = ort;
       document.getElementById("preview-fahrtart").innerText = fahrtart;
@@ -607,10 +748,8 @@
       const selText = document.getElementById("befehlstyp").options[document.getElementById("befehlstyp").selectedIndex].text;
       document.getElementById("preview-typ").innerText = selText;
 
-      // Schritt 1 ausblenden, Schritt 2 anzeigen
       document.getElementById("form-step-1").style.display = "none";
       document.getElementById("form-step-2").style.display = "block";
-
       document.getElementById("step-1-badge").classList.remove("active");
       document.getElementById("step-2-badge").classList.add("active");
     });
@@ -619,12 +758,11 @@
     document.getElementById("btn-back-to-step1").addEventListener("click", () => {
       document.getElementById("form-step-2").style.display = "none";
       document.getElementById("form-step-1").style.display = "block";
-
       document.getElementById("step-2-badge").classList.remove("active");
       document.getElementById("step-1-badge").classList.add("active");
     });
 
-    // Schritt 2: Befehl Ausfertigen & Speichern
+    // Befehl ausfertigen (Fdl)
     document.getElementById("btn-submit-befehl").addEventListener("click", async () => {
       const text = document.getElementById("befehl-text").value.trim();
       const errorEl = document.getElementById("step2-error");
@@ -642,31 +780,28 @@
       const accessCode = generateAccessCode();
       const currentUser = auth.currentUser ? auth.currentUser.email : "Fdl";
 
-      const fullInhalt = `${befehlstypText}\n\nAnweisung:\n${text}`;
-
       const newBefehl = {
         zugnummer: zug,
         accessCode: accessCode,
         standort: ort,
         arbeitsplatz: arbeitsplatz,
-        inhalt: fullInhalt,
+        befehlstyp: befehlstypText,
+        inhalt: `${befehlstypText}\n\nAnweisung:\n${text}`,
         fdl: currentUser,
-        status: "Offen (Standorteingabe ausstehend)",
+        tfStandort: "",
+        status: "Erstellt (Standorteingabe erforderlich)",
         createdAt: new Date().toLocaleString("de-DE")
       };
 
       try {
         await addDoc(collection(db, "befehle"), newBefehl);
       } catch (err) {
-        console.log("Speichere lokal:", err);
         localBefehle.push(newBefehl);
       }
 
-      // Zugriffscode anzeigen
       document.getElementById("generated-code-display").innerText = accessCode;
       document.getElementById("code-banner").style.display = "block";
 
-      // Formular zurücksetzen & Schritt 1 wiederherstellen
       document.getElementById("zugnummer").value = "";
       document.getElementById("standort").value = "";
       document.getElementById("arbeitsplatz").value = "";
@@ -678,11 +813,11 @@
       document.getElementById("step-2-badge").classList.remove("active");
       document.getElementById("step-1-badge").classList.add("active");
 
-      loadActiveBefehle();
-      alert("Der Befehl wurde erfolgreich ausgefertigt!");
+      loadAllBefehle();
+      alert("Befehl erfolgreich ausgefertigt! Der Zugriffscode wird oben angezeigt.");
     });
 
-    // BEFEHL ABRUFEN (TF)
+    /* --- BEFEHL ABRUFEN & STANDORT-WORKFLOW (Tf) --- */
     document.getElementById("btn-search").addEventListener("click", async () => {
       const zug = document.getElementById("search-zug").value.trim();
       const code = document.getElementById("search-code").value.trim();
@@ -692,101 +827,180 @@
         return;
       }
 
-      let gefundenerBefehl = null;
-
+      let b = null;
       try {
         const q = query(collection(db, "befehle"), where("zugnummer", "==", zug), where("accessCode", "==", code));
-        const querySnapshot = await getDocs(q);
-        querySnapshot.forEach((docSnap) => {
-          gefundenerBefehl = { id: docSnap.id, ...docSnap.data() };
-        });
+        const snap = await getDocs(q);
+        snap.forEach((d) => b = { id: d.id, ...d.data() });
       } catch (e) {
-        gefundenerBefehl = localBefehle.find(b => b.zugnummer === zug && b.accessCode === code);
+        b = localBefehle.find(x => x.zugnummer === zug && x.accessCode === code);
       }
 
-      if (gefundenerBefehl) {
-        document.getElementById("befehl-details").style.display = "block";
-        document.getElementById("detail-zug").innerText = gefundenerBefehl.zugnummer;
-        document.getElementById("detail-standort").innerText = gefundenerBefehl.standort;
-        document.getElementById("detail-fdl").innerText = gefundenerBefehl.fdl;
-        document.getElementById("detail-inhalt").innerText = gefundenerBefehl.inhalt;
-        document.getElementById("detail-status").innerText = gefundenerBefehl.status;
-
-        if (gefundenerBefehl.status === "Gültig") {
-          document.getElementById("tf-standort-section").style.display = "none";
-          document.getElementById("tf-quittieren-section").style.display = "none";
-        } else {
-          document.getElementById("tf-standort-section").style.display = "block";
-        }
-      } else {
-        alert("Kein Befehl mit dieser Zugnummer und diesem Zugriffscode gefunden!");
+      if (!b) {
+        alert("Kein Befehl mit dieser Zugnummer und Zugriffscode gefunden!");
         document.getElementById("befehl-details").style.display = "none";
-      }
-    });
-
-    // Schritt 1 (TF): Standort übermitteln
-    document.getElementById("btn-submit-standort").addEventListener("click", () => {
-      const tfStandort = document.getElementById("tf-standort-input").value;
-      if (!tfStandort) {
-        alert("Bitte Standort angeben.");
         return;
       }
-      alert("Standort übermittelt. Bitte nun den Befehl lesen und quittieren.");
-      document.getElementById("tf-standort-section").style.display = "none";
-      document.getElementById("tf-quittieren-section").style.display = "block";
+
+      activeBefehlObject = b;
+      document.getElementById("befehl-details").style.display = "block";
+
+      if (b.status === "Erstellt (Standorteingabe erforderlich)") {
+        document.getElementById("tf-standort-section").style.display = "block";
+        document.getElementById("tf-waiting-section").style.display = "none";
+        document.getElementById("tf-content-section").style.display = "none";
+      } else if (b.status === "Standortabgleich durch Fdl erforderlich") {
+        document.getElementById("tf-standort-section").style.display = "none";
+        document.getElementById("tf-waiting-section").style.display = "block";
+        document.getElementById("tf-content-section").style.display = "none";
+      } else {
+        document.getElementById("tf-standort-section").style.display = "none";
+        document.getElementById("tf-waiting-section").style.display = "none";
+        document.getElementById("tf-content-section").style.display = "block";
+
+        document.getElementById("detail-zug").innerText = b.zugnummer;
+        document.getElementById("detail-standort").innerText = b.standort;
+        document.getElementById("detail-tf-standort").innerText = b.tfStandort || "-";
+        document.getElementById("detail-fdl").innerText = b.fdl;
+        document.getElementById("detail-inhalt").innerText = b.inhalt;
+        document.getElementById("detail-status").innerText = b.status;
+
+        if (b.status === "Gültig") {
+          document.getElementById("tf-quittieren-section").style.display = "none";
+        } else {
+          document.getElementById("tf-quittieren-section").style.display = "block";
+        }
+      }
     });
 
-    // Checkbox für Quittierung
+    // Tf sendet Standort an Fdl
+    document.getElementById("btn-submit-standort").addEventListener("click", async () => {
+      const standortInput = document.getElementById("tf-standort-input").value.trim();
+      if (!standortInput) {
+        alert("Bitte gib deinen aktuellen Standort ein!");
+        return;
+      }
+
+      if (activeBefehlObject) {
+        activeBefehlObject.tfStandort = standortInput;
+        activeBefehlObject.status = "Standortabgleich durch Fdl erforderlich";
+
+        if (activeBefehlObject.id) {
+          try {
+            const docRef = doc(db, "befehle", activeBefehlObject.id);
+            await updateDoc(docRef, {
+              tfStandort: standortInput,
+              status: "Standortabgleich durch Fdl erforderlich"
+            });
+          } catch(e){}
+        }
+      }
+
+      document.getElementById("tf-standort-section").style.display = "none";
+      document.getElementById("tf-waiting-section").style.display = "block";
+      alert("Standort übermittelt! Der Fdl muss diesen nun bestätigen.");
+      loadAllBefehle();
+    });
+
+    // Checkbox zum Quittieren
     document.getElementById("chk-gelesen").addEventListener("change", (e) => {
       document.getElementById("btn-quittieren").disabled = !e.target.checked;
     });
 
-    // Quittieren (TF)
-    document.getElementById("btn-quittieren").addEventListener("click", () => {
+    // Tf quittiert Befehl
+    document.getElementById("btn-quittieren").addEventListener("click", async () => {
+      if (activeBefehlObject) {
+        activeBefehlObject.status = "Gültig";
+
+        if (activeBefehlObject.id) {
+          try {
+            const docRef = doc(db, "befehle", activeBefehlObject.id);
+            await updateDoc(docRef, { status: "Gültig" });
+          } catch(e){}
+        }
+      }
+
       document.getElementById("detail-status").innerText = "Gültig";
       document.getElementById("detail-status").className = "badge badge-gueltig";
       document.getElementById("tf-quittieren-section").style.display = "none";
-      alert("Befehl wurde erfolgreich quittiert und ist nun GÜLTIG.");
-      loadActiveBefehle();
+      alert("Befehl erfolgreich quittiert. Der Befehl ist nun GÜLTIG.");
+      loadAllBefehle();
     });
 
-    // Tabellen-Inhalte laden
-    async function loadActiveBefehle() {
+    /* --- TABELLEN & FDL-STANDORTABGLEICH --- */
+    async function loadAllBefehle() {
       const activeList = document.getElementById("aktive-befehle-list");
       const meineList = document.getElementById("meine-befehle-list");
+      const abgleichList = document.getElementById("standort-abgleich-list");
+
       activeList.innerHTML = "";
       meineList.innerHTML = "";
+      abgleichList.innerHTML = "";
 
-      let befehleArray = [];
-
+      let arr = [];
       try {
-        const querySnapshot = await getDocs(collection(db, "befehle"));
-        querySnapshot.forEach((docSnap) => {
-          befehleArray.push(docSnap.data());
-        });
-      } catch (err) {
-        befehleArray = localBefehle;
+        const snap = await getDocs(collection(db, "befehle"));
+        snap.forEach(d => arr.push({ id: d.id, ...d.data() }));
+      } catch (e) {
+        arr = localBefehle;
       }
 
-      if (befehleArray.length === 0) {
-        activeList.innerHTML = `<tr><td colspan="5" style="text-align:center;">Keine aktiven Befehle.</td></tr>`;
+      if (arr.length === 0) {
+        activeList.innerHTML = `<tr><td colspan="6" style="text-align:center;">Keine Befehle vorhanden.</td></tr>`;
         meineList.innerHTML = `<tr><td colspan="4" style="text-align:center;">Keine Befehle vorhanden.</td></tr>`;
+        abgleichList.innerHTML = `<tr><td colspan="4" style="text-align:center;">Keine ausstehenden Standortabgleiche.</td></tr>`;
         return;
       }
 
-      befehleArray.forEach(b => {
+      let countAbgleich = 0;
+
+      arr.forEach(b => {
+        let badgeClass = "badge-offen";
+        if (b.status === "Gültig") badgeClass = "badge-gueltig";
+        if (b.status.includes("Standortabgleich")) badgeClass = "badge-abgleich";
+
         const row = `
           <tr>
             <td><strong>Zug ${b.zugnummer}</strong></td>
             <td><span style="font-family:monospace; font-weight:bold; color:var(--primary);">${b.accessCode}</span></td>
             <td>${b.standort}</td>
+            <td>${b.tfStandort || '<i>Ausstehend</i>'}</td>
             <td>${b.createdAt}</td>
-            <td><span class="badge ${b.status === 'Gültig' ? 'badge-gueltig' : 'badge-offen'}">${b.status}</span></td>
+            <td><span class="badge ${badgeClass}">${b.status}</span></td>
           </tr>
         `;
         activeList.innerHTML += row;
         meineList.innerHTML += row;
+
+        // Fdl Standortabgleich Liste
+        if (b.status === "Standortabgleich durch Fdl erforderlich") {
+          countAbgleich++;
+          const abgleichRow = document.createElement("tr");
+          abgleichRow.innerHTML = `
+            <td><strong>Zug ${b.zugnummer}</strong></td>
+            <td>${b.standort}</td>
+            <td style="color:var(--primary); font-weight:bold;">${b.tfStandort}</td>
+            <td><button class="confirm-btn success" style="padding:5px 10px; width:auto;">Standort bestätigen</button></td>
+          `;
+
+          abgleichRow.querySelector(".confirm-btn").addEventListener("click", async () => {
+            b.status = "Offen (Standort bestätigt)";
+            if (b.id) {
+              try {
+                await updateDoc(doc(db, "befehle", b.id), { status: "Offen (Standort bestätigt)" });
+              } catch(e){}
+            }
+            alert(`Standort für Zug ${b.zugnummer} bestätigt! Der Lokführer kann den Befehl nun einsehen.`);
+            loadAllBefehle();
+          });
+
+          abgleichList.appendChild(abgleichRow);
+        }
       });
+
+      if (countAbgleich === 0) {
+        abgleichList.innerHTML = `<tr><td colspan="4" style="text-align:center;">Keine ausstehenden Standortabgleiche.</td></tr>`;
+      }
     }
   </script>
 </body>
